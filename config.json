@@ -1,0 +1,28 @@
+{
+  "_comment": "Scoring defaults are ESPN standard PPR. Override any key per league under leagues.<name>.scoring.",
+  "scoring": {
+    "pass_yd": 0.04,
+    "pass_td": 4,
+    "int": -2,
+    "rush_yd": 0.1,
+    "reception": 1,
+    "rec_yd": 0.1,
+    "td": 6,
+    "pat": 1,
+    "fg_0_39": 3,
+    "fg_40_49": 4,
+    "fg_50_plus": 5,
+    "fg_miss": -1,
+    "dst_sack": 1,
+    "dst_int": 2,
+    "dst_fumble_rec": 2,
+    "dst_td": 6,
+    "_dst_tiers_comment": "Each tier is [upper bound inclusive, points].",
+    "dst_points_allowed": [[0, 5], [6, 4], [13, 3], [17, 1], [27, 0], [34, -1], [45, -3], [999, -5]],
+    "dst_yards_allowed": [[99, 5], [199, 3], [299, 2], [349, 0], [399, -1], [449, -3], [499, -5], [549, -6], [9999, -7]]
+  },
+  "leagues": {
+    "netties": { "roster_file": "leagues/netties.txt", "scoring": { "reception": 0.5 } },
+    "fff": { "roster_file": "leagues/fff.txt", "scoring": {} }
+  }
+}
