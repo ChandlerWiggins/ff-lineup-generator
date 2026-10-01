@@ -1,0 +1,74 @@
+# Example league file. Copy it to leagues/<your-league-name>.txt, then:
+#   1. Set your scoring below (delete any line that matches the default).
+#   2. Replace everything under the scoring lines with a fresh paste from
+#      ESPN's "My Team" page (select the whole roster table, copy, paste).
+# Lines starting with # are settings/comments; full list of keys is in config.json.
+#
+# reception = 0.5
+# pass_td = 6
+
+QB
+Josh AllenJosh Allen
+Josh Allen
+BUF
+QB
+
+MOVE
+NE
+Sun 1:00 PM
+22.0
+RB
+Bijan RobinsonBijan Robinson
+Bijan Robinson
+ATL
+RB
+
+MOVE
+@NO
+Mon 8:15 PM
+19.5
+FLEX
+Puka NacuaPuka Nacua
+Puka Nacua
+LAR
+WR
+
+MOVE
+@PHI
+Sun 1:00 PM
+16.8
+D/ST
+Steelers D/STSteelers D/ST
+Steelers
+PIT
+D/ST
+
+MOVE
+@CLE
+Thu 8:15 PM
+7.0
+K
+Brandon AubreyBrandon Aubrey
+Brandon Aubrey
+DAL
+K
+
+MOVE
+@HOU
+Sun 1:00 PM
+9.0
+Bench
+Kyren WilliamsKyren Williams
+Kyren Williams
+Q
+LAR
+RB
+
+MOVE
+@PHI
+Sun 1:00 PM
+14.0
+IR
+
+Empty
+--

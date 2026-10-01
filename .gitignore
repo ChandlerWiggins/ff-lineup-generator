@@ -2,3 +2,6 @@
 __pycache__/
 .venv/
 .cache/
+# Your league rosters stay local; see examples/myleague.txt
+leagues/*
+!leagues/.gitkeep

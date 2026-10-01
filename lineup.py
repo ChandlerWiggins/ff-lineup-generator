@@ -2,7 +2,7 @@
 """Pick fantasy starters from Vegas player-prop lines.
 
 Usage:
-  python3 lineup.py                 # all leagues in config.json
+  python3 lineup.py                 # every league file in leagues/
   python3 lineup.py netties         # one league
   python3 lineup.py -v              # show the stat line behind each projection
   python3 lineup.py --dry-run       # show credit cost without spending any
@@ -28,6 +28,7 @@ from ff.teams import NAME_TO_ABBR, TEAMS
 
 ROOT = Path(__file__).resolve().parent
 CACHE = ROOT / ".cache"
+LEAGUES = ROOT / "leagues"
 
 
 def load_env() -> None:
@@ -37,6 +38,25 @@ def load_env() -> None:
             if "=" in line and not line.lstrip().startswith("#"):
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip().strip("'\""))
+
+
+def load_league(path: Path, default_scoring: dict):
+    """A league file is `# key = value` scoring lines followed by the ESPN paste."""
+    scoring = dict(default_scoring)
+    paste = []
+    for line in path.read_text().splitlines():
+        if line.lstrip().startswith("#"):
+            setting = line.lstrip()[1:]
+            if "=" in setting:
+                key, value = (part.strip() for part in setting.split("=", 1))
+                if key not in default_scoring or key.startswith("_"):
+                    valid = ", ".join(k for k in default_scoring if not k.startswith("_"))
+                    raise ValueError(f"unknown scoring setting {key!r}; valid: {valid}")
+                scoring[key] = json.loads(value)
+        else:
+            paste.append(line)
+    slots, roster = parse_espn_roster("\n".join(paste))
+    return slots, roster, scoring
 
 
 def team_schedule(events: List[dict]) -> Dict[str, dict]:
@@ -55,7 +75,7 @@ def team_schedule(events: List[dict]) -> Dict[str, dict]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("leagues", nargs="*", help="league names from config.json (default: all)")
+    ap.add_argument("leagues", nargs="*", help="league file names in leagues/, without .txt (default: all)")
     ap.add_argument("-v", "--verbose", action="store_true", help="show stat lines behind projections")
     ap.add_argument("--dry-run", action="store_true", help="print credit cost, fetch nothing paid")
     ap.add_argument("--refresh", action="store_true", help="ignore cached odds")
@@ -67,16 +87,19 @@ def main() -> int:
     if not api_key:
         sys.exit("ODDS_API_KEY missing: add `ODDS_API_KEY=yourkey` to .env")
 
-    config = json.loads((ROOT / "config.json").read_text())
-    names = args.leagues or list(config["leagues"])
+    default_scoring = json.loads((ROOT / "config.json").read_text())["scoring"]
+    files = {p.stem: p for p in sorted(LEAGUES.glob("*.txt"))}
+    if not files:
+        sys.exit("No leagues found. Copy examples/myleague.txt into leagues/ and paste your ESPN roster.")
+    names = args.leagues or list(files)
     leagues = {}
     for name in names:
-        if name not in config["leagues"]:
-            sys.exit(f"Unknown league {name!r}; choices: {', '.join(config['leagues'])}")
-        lc = config["leagues"][name]
-        slots, roster = parse_espn_roster((ROOT / lc["roster_file"]).read_text())
-        scoring = {**config["scoring"], **lc.get("scoring", {})}
-        leagues[name] = (slots, roster, scoring)
+        if name not in files:
+            sys.exit(f"Unknown league {name!r}; choices: {', '.join(files)}")
+        try:
+            leagues[name] = load_league(files[name], default_scoring)
+        except ValueError as e:
+            sys.exit(f"{files[name].relative_to(ROOT)}: {e}")
 
     client = OddsClient(api_key, CACHE, args.cache_hours, args.refresh)
     sched = team_schedule(client.events())

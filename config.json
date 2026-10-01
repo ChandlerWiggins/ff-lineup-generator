@@ -1,5 +1,5 @@
 {
-  "_comment": "Scoring defaults are ESPN standard PPR. Override any key per league under leagues.<name>.scoring.",
+  "_comment": "Default scoring (ESPN standard PPR). Override per league with '# key = value' lines at the top of its leagues/*.txt file.",
   "scoring": {
     "pass_yd": 0.04,
     "pass_td": 4,
@@ -20,9 +20,5 @@
     "_dst_tiers_comment": "Each tier is [upper bound inclusive, points].",
     "dst_points_allowed": [[0, 5], [6, 4], [13, 3], [17, 1], [27, 0], [34, -1], [45, -3], [999, -5]],
     "dst_yards_allowed": [[99, 5], [199, 3], [299, 2], [349, 0], [399, -1], [449, -3], [499, -5], [549, -6], [9999, -7]]
-  },
-  "leagues": {
-    "netties": { "roster_file": "leagues/netties.txt", "scoring": { "reception": 0.5 } },
-    "fff": { "roster_file": "leagues/fff.txt", "scoring": {} }
   }
 }
